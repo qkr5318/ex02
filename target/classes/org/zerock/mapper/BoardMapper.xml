@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!-- mabatis -->
+<mapper namespace="org.zerock.mapper.BoardMapper">
+
+	<!-- mybatis에 id와 BoardMapper에 get메소드랑 똑같이 맞춰야 한다. -->
+	<select id="getList" resultType="org.zerock.domain.BoardVO">
+	<!-- <[CDATA] 캐릭터 데이터
+		xml에 사용한CDATA 부분은 XML에서 부등호를 사용하기 위해서 사용한다. -->
+		<![CDATA[
+		select * from tbl_board where bno > 0
+		]]>
+	</select> 
+	
+	<!-- mybatis에 id와 BoardMapper에 get메소드랑 똑같이 맞춰야 한다. -->
+		<!-- insert into tbl_board (bno, title, content, writer)
+			VALUES (SEQ_BOARD.nextval, '테스트 제목', '테스트 내용', '장나라'); -->
+	<insert id="insert">
+			insert into tbl_board (bno, title, content, writer)
+			VALUES (SEQ_BOARD.nextval, #{title}, #{content}, #{writer})
+	</insert>
+	
+	<!-- insertSelectKey()는 @SelectKey라는 MyBatis의 어노테이션을 이용합니다.
+		@SelectKey는 주로 PK값을 미리(BEFORE) SQL을 통해서 처리해 두고 특정한 이름으로
+		결과를 보관하는 방식입니다. @Insert 할때 SQL문을 보면 ${bno}와 같이 이미 처리된 결과를 이용하는 것을 볼 수 있습니다. -->
+
+	<!-- select SEQ_BOARD.nextval from dual -->
+	<insert id="insertSelectKey">
+		<selectKey keyProperty="bno" order="BEFORE" resultType="long">
+			select SEQ_BOARD.nextval from dual
+		</selectKey>
+		insert into tbl_board (bno, title, content, writer)
+		VALUES (#{bno}, #{title}, #{content}, #{writer})
+	</insert>
+	<!-- select * from tbl_board where bno = 5 -->
+	<select id="read" resultType="org.zerock.domain.BoardVO">
+		select * from tbl_board where bno = #{bno}
+	</select>
+	
+	<!-- DELETE FROM tbl_board WHERE bno = 1 -->
+	<delete id="delete">
+		DELETE FROM tbl_board WHERE bno = #{bno}
+	</delete>
+	
+	<!-- UPDATE tbl_board SET title = '수정된 제목', content = '수정된 내용', writer = 'gamst', updatedate = sysdate WHERE bno = 2 -->	
+	<update id="update">
+		UPDATE tbl_board SET title = #{title}, content = #{content}, writer = #{writer}, updatedate = sysdate WHERE bno = #{bno}
+	</update>
+</mapper>
